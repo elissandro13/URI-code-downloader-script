@@ -25,7 +25,7 @@ async function scrape()  {
     const array = await readList();
 
     console.log('Writing code file\n');
-    for (let j = 0; j < array.length-220; j++) {
+    for (let j = 0; j < array.length; j++) {
         await page.goto("https://www.urionlinejudge.com.br/judge/pt/runs/code/" + array[j]);
         await page.waitFor(100);
         console.log(`${j} of ${array.length} codes\n`);
@@ -76,6 +76,12 @@ async function getCodeExtesion(lenguage){
 }
 async function buildIdList(page){
 
+    await fs.writeFileSync("./src/list.txt",'', 
+            { 
+                encoding: "utf8", 
+                flag: "w+", 
+                mode: 0o666 
+            }); 
     console.log('Building the list with the links')
     await page.goto('https://www.urionlinejudge.com.br/judge/pt/runs?answer_id=1');
     await page.waitFor(100);
