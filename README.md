@@ -1,7 +1,36 @@
 # URI-code-downloader-script
 A script to download all your code from URI online judge
 
-In order to the script run you need to give the ids from the problems in the dictinary file.(this part is not automatic yet)
-Put your email and password in the constant in app.js
+## Getting Started
 
-Changing the headless value to false allow to watch the process in the browser (inside logIn function)
+git clone https://github.com/elissandro13/URI-code-downloader-script.git
+
+
+
+### Prerequisites
+
+* Node
+* NPM
+
+
+### Installing
+
+```
+npm install
+
+```
+### Running the Project
+
+```
+node index.js
+
+```
+### Output
+
+The default output is the directory uri-codes
+
+### Customazing
+
+Changing the hideBroswer value to false allow to watch the process in the browser 
+
+.py,.java and .cpp are the default lenguages, but you can add more in the getCodeExtesion function

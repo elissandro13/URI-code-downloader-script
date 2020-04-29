@@ -9,8 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
-    "cheerio": "^1.0.0-rc.3",
-    "puppeteer": "^2.1.1"
+    "puppeteer": "^2.1.1",
+    "readline-sync": "^1.4.10"
   }
 }
