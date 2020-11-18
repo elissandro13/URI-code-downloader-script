@@ -25,10 +25,10 @@ async function scrape()  {
     const array = await readList();
 
     console.log('Writing code file\n');
-    for (let j = 0; j < array.length; j++) {
+    for (let j = 0; j < array.length-1; j++) {
         await page.goto("https://www.urionlinejudge.com.br/judge/pt/runs/code/" + array[j]);
         await page.waitFor(100);
-        console.log(`${j} of ${array.length} codes\n`);
+        console.log(`${j} of ${array.length-1} codes\n`);
         const result = await getCode(page);
         let fileFormat = await getCodeExtesion(result.extesion);
         let fileName = result.title + fileFormat;
@@ -38,7 +38,6 @@ async function scrape()  {
     browser.close()
 };
 
-scrape();
 
 async function getCode(page){
     const result = await page.evaluate(async () => {
@@ -48,8 +47,8 @@ async function getCode(page){
         title = title.replace(/\s+/g, '-');
         let textCode = document.querySelectorAll('div.ace_line');
         textCode.forEach(function(el){ 
-                el.innerHTML = el.innerHTML.replace(/&nbsp;/gi, ' ')
-            }
+            el.innerHTML = el.innerHTML.replace(/&nbsp;/gi, ' ')
+        }
         );
         let code = "";
         for (let index = 0; index < textCode.length; index++) {
@@ -68,44 +67,49 @@ async function getCodeExtesion(lenguage){
     switch (lenguage) {
         case "java":
             return ".java";
-        case "python":
-            return ".py";
-        default:
-            return ".cpp"
-    }
-}
-async function buildIdList(page){
+            case "python":
+                return ".py";
+                default:
+                    return ".cpp"
+                }
+            }
+            async function buildIdList(page){
+                
+                await fs.writeFileSync("./src/list.txt",'', 
+                { 
+                    encoding: "utf8", 
+                    flag: "w+", 
+                    mode: 0o666 
+                }); 
+                console.log('Building the list with the links')
+                await page.goto('https://www.urionlinejudge.com.br/judge/pt/runs?answer_id=1');
+                await page.waitFor(100);
+                const indexMax = await page.evaluate(async () => {
+                    let indexMax = document.querySelector('#table-info');
+                    indexMax = indexMax.textContent.trim().split(' ');
+                    indexMax = indexMax[indexMax.length-1];
+                    return indexMax;
+                });
+                for (let index = 1; index <= indexMax; index++) {
+                    console.log(`Page ${index} of ${indexMax}`)
+                    await page.goto(`https://www.urionlinejudge.com.br/judge/pt/runs?answer_id=1&page=${index}`);
+                    await page.waitFor(100);      
+                    let array = await page.evaluate(async () => {
+                        let array = [];
+                        let id = document.querySelectorAll('.id a')
+                        id.forEach(e => array.push(e.textContent));
+                        return array;
+                    });
+                    array += ",";
+                    await fs.writeFileSync("./src/list.txt",array, 
+                    { 
+                        encoding: "utf8", 
+                        flag: "a+", 
+                        mode: 0o666 
+                    }); 
+                }
+            }
+            
+scrape();
 
-    await fs.writeFileSync("./src/list.txt",'', 
-            { 
-                encoding: "utf8", 
-                flag: "w+", 
-                mode: 0o666 
-            }); 
-    console.log('Building the list with the links')
-    await page.goto('https://www.urionlinejudge.com.br/judge/pt/runs?answer_id=1');
-    await page.waitFor(100);
-    const indexMax = await page.evaluate(async () => {
-        let indexMax = document.querySelector('#table-info');
-        indexMax = indexMax.textContent.trim().split(' ');
-        indexMax = indexMax[indexMax.length-1];
-        return indexMax;
-    });
-    for (let index = 1; index <= indexMax; index++) {
-        console.log(`Page ${index} of ${indexMax}`)
-        await page.goto(`https://www.urionlinejudge.com.br/judge/pt/runs?answer_id=1&page=${index}`);
-        await page.waitFor(100);      
-        let array = await page.evaluate(async () => {
-            let array = [];
-            let id = document.querySelectorAll('.id a')
-                id.forEach(e => array.push(e.textContent));
-            return array;
-        });
-        await fs.writeFileSync("./src/list.txt",array, 
-            { 
-                encoding: "utf8", 
-                flag: "a+", 
-                mode: 0o666 
-            }); 
-    }
-}
+module.exports = {scrape};
