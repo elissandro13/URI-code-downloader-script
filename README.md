@@ -9,7 +9,7 @@ git clone https://github.com/elissandro13/URI-code-downloader-script.git
 
 ### Prerequisites
 
-* Node
+* Node (node version that is stable 10.19.0 [issue #1](https://github.com/elissandro13/URI-code-downloader-script/issues/1))
 * NPM
 
 
